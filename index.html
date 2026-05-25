@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protected document</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f5f7fb;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #f5f7fb;
+    }
+    .gate {
+      width: min(440px, 100%);
+      border: 1px solid #d8e0ea;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 42px rgba(15, 23, 42, 0.1);
+      padding: 24px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+    p {
+      margin: 0 0 18px;
+      color: #5d6978;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #334155;
+      font-weight: 650;
+    }
+    input {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0 12px;
+      font-size: 16px;
+      outline: none;
+    }
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+    button {
+      width: 100%;
+      height: 44px;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 6px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+    .error {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #b42318;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <form class="gate" id="gate">
+    <h1>请输入查看密码</h1>
+    <p>这个页面已加密。输入正确密码后，内容会在你的浏览器中本地解密显示。</p>
+    <label for="password">查看密码</label>
+    <input id="password" type="password" autocomplete="current-password" autofocus required>
+    <button id="submit" type="submit">解锁文档</button>
+    <div class="error" id="error" role="alert"></div>
+  </form>
+  <script>
+    const payload = {"v":1,"alg":"AES-256-GCM","kdf":"PBKDF2-SHA256","iterations":600000,"salt":"CyinK/ifKmAOctUqRHTHlQ==","iv":"9A4edylk/xcSPdF4","authTag":"FfXh7pRDfP+e6tDt2EfqSw==","data":"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"};
+
+    function fromBase64(value) {
+      const binary = atob(value);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+      return bytes;
+    }
+
+    async function deriveKey(password) {
+      const encodedPassword = new TextEncoder().encode(password);
+      const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        encodedPassword,
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+      return crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: fromBase64(payload.salt),
+          iterations: payload.iterations,
+          hash: "SHA-256",
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"]
+      );
+    }
+
+    async function decrypt(password) {
+      const key = await deriveKey(password);
+      const encrypted = fromBase64(payload.data);
+      const authTag = fromBase64(payload.authTag);
+      const combined = new Uint8Array(encrypted.length + authTag.length);
+      combined.set(encrypted, 0);
+      combined.set(authTag, encrypted.length);
+      const decrypted = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: fromBase64(payload.iv), tagLength: 128 },
+        key,
+        combined
+      );
+      return new TextDecoder().decode(decrypted);
+    }
+
+    document.getElementById("gate").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const input = document.getElementById("password");
+      const button = document.getElementById("submit");
+      const error = document.getElementById("error");
+      button.disabled = true;
+      error.textContent = "";
+      try {
+        const html = await decrypt(input.value);
+        document.open();
+        document.write(html);
+        document.close();
+      } catch {
+        error.textContent = "密码不正确，或文件已损坏。";
+        button.disabled = false;
+        input.select();
+      }
+    });
+  </script>
+</body>
+</html>
